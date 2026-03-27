@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Trip App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 30px;
+            margin: 50px auto;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .header img {
+            width: 120px; 
+            height: auto;
+        }
+        .header h1 {
+            color: rgb(211, 26, 26);
+            font-weight: 700;
+            margin: 0;
+        }
+        .header h2 {
+            color: rgb(211, 26, 26);
+            font-weight: 400;
+            margin-top: 10px;
+        }
+        label {
+            font-weight: 500;
+            display: block;
+            margin-top: 12px;
+            text-align: left;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #b71c1c;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #b71c1c;
+            transform: scale(1.05);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #b71c1c;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            gap: 10px;
+            padding-left: 20px;
+            color: #b71c1c;
+        }
+        .stars {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .star {
+            color: gray;
+            transition: color 0.3s, transform 0.2s;
+        }
+        .star:hover, .star.active {
+            color: gold;
+            transform: scale(1.2);
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            .header-top {
+                flex-direction: column;
+                text-align: center;
+            }
+            .rating {
+                justify-content: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        {% load static %}
+        <div class="header-top">
+            <img src="{% static 'logo.png' %}" alt="Smart Trip Logo" class="logo">
+            <h1>My Trip</h1>
+        </div>
+        <h2>Your Easy Travel Cost Calculator</h2>
+    </div>
+
+    <div class="container">
+        <label>Car Condition</label>
+        <select id="car_condition" required>
+            <option value="" disabled selected>Select Car Condition</option>
+            <option value="3">Excellent</option>
+            <option value="2">Very Good</option>
+            <option value="1">Good</option>
+            <option value="0">Bad</option>
+        </select>
+
+        <label>Traffic Condition</label>
+        <select id="traffic_condition" required>
+            <option value="" disabled selected>Select Traffic Condition</option>
+            <option value="2">Congested Traffic</option>
+            <option value="1">Dense Traffic</option>
+            <option value="0">Flow Traffic</option>
+        </select>
+
+        <label>Passenger Count</label>
+        <input type="number" id="passenger_count" required min="1" max="6">
+
+        <label>Hour of the Day</label>
+        <input type="number" id="hour" required min="0" max="23">
+
+        <label>Day</label>
+        <input type="number" id="day" required min="1" max="31">
+
+        <label>Month</label>
+        <input type="number" id="month" required min="1" max="12">
+
+        <label>Year</label>
+        <input type="number" id="year" required min="2009" max="2025">
+
+        <label>Weekday</label>
+        <select id="weekday">
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+
+        <label>JFK Distance (km)</label>
+        <input type="number" id="JFK_distance" required min="0">
+
+        <label>EWR Distance (km)</label>
+        <input type="number" id="EWR_distance" required min="0">
+
+        <label>LGA Distance (km)</label>
+        <input type="number" id="LGA_distance" required min="0">
+
+        <label>SOL Distance (km)</label>
+        <input type="number" id="SOL_distance" required min="0">
+
+        <label>NYC Distance (km)</label>
+        <input type="number" id="NYC_distance" required min="0">
+
+        <label>Total Trip Distance (km)</label>
+        <input type="number" id="distance" required min="0">
+
+        <button onclick="sendDataToModel()">Calculate Fare</button>
+
+        <p class="result" id="fare_output">Waiting for input...</p>
+
+
+        <div class="rating">
+            <h2>Rate Us</h2>
+            <div class="stars">
+                <span class="star" onclick="rate(1)">&#9733;</span>
+                <span class="star" onclick="rate(2)">&#9733;</span>
+                <span class="star" onclick="rate(3)">&#9733;</span>
+                <span class="star" onclick="rate(4)">&#9733;</span>
+                <span class="star" onclick="rate(5)">&#9733;</span>
+            </div>
+        </div>
+            
+    </div>
+
+    <script>
+        function sendDataToModel() {
+            let distance = parseFloat(document.getElementById("distance").value);
+            let trafficCondition = parseFloat(document.getElementById("traffic_condition").value);
+            let hour = parseInt(document.getElementById("hour").value);
+            let weekday = document.getElementById("weekday").value;
+        
+            let weekdayMap = {
+                "Sunday": 0, "Monday": 1, "Tuesday": 2, "Wednesday": 3,
+                "Thursday": 4, "Friday": 5, "Saturday": 6
+            };
+        
+            let requestData = {
+                "distance": distance,
+                "traffic_condition": trafficCondition,
+                "hour": hour,
+                "weekday": weekdayMap[weekday],
+        
+                // ADDING MISSING FEATURES
+                "Car Condition": 1,  
+                "Traffic Condition": trafficCondition, 
+                "fare_amount": 0, 
+                "passenger_count": 1, 
+                "day": new Date().getDate(),
+                "month": new Date().getMonth() + 1,
+                "year": new Date().getFullYear(),
+                "jfk_dist": 0,  
+                "ewr_dist": 0,
+                "lga_dist": 0,
+                "sol_dist": 0,
+                "nyc_dist": 0
+            };
+        
+            console.log("Sending Data to API:", requestData);
+        
+            document.getElementById("fare_output").innerText = "⏳ Predicting...";
+        
+            fetch("http://127.0.0.1:8000/api/predict/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("API Response Data:", data);
+                if (data.predicted_fare !== undefined) {
+                    document.getElementById("fare_output").innerText = `Predicted Fare: $${data.predicted_fare}`;
+                } else {
+                    document.getElementById("fare_output").innerText = "Invalid response from API.";
+                }
+            })
+            .catch(error => {
+                document.getElementById("fare_output").innerText = "Failed to predict fare.";
+                console.error("Fetch Error:", error);
+            });
+        }
+        
+        function rate(stars) {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                star.classList.toggle('active', index < stars);
+            });
+        }
+    </script>
+
+</body>
+</html>
