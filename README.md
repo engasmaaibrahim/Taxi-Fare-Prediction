@@ -67,8 +67,8 @@ This project aims to:
 ### 1- Clone the repository
 
 ```bash id="r7r7v2"
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/engasmaaibrahim/Taxi-Fare-Prediction.git
+cd Taxi-Fare-Prediction
 ```
 
 ---
